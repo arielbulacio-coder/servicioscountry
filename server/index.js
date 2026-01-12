@@ -5,6 +5,10 @@ import sequelize from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
+import './models/associations.js'; // Import associations to init models
+import reviewRoutes from './routes/reviewRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -16,6 +20,8 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'API is running' });
