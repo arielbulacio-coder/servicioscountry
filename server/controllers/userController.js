@@ -11,7 +11,7 @@ export const getProviders = async (req, res) => {
 
         const providers = await User.findAll({
             where: whereClause,
-            attributes: ['id', 'name', 'email', 'phone', 'serviceType', 'description', 'isVerified']
+            attributes: ['id', 'name', 'email', 'phone', 'serviceType', 'description', 'isVerified', 'profileImage']
         });
 
         res.json(providers);

@@ -97,16 +97,31 @@ const Dashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {providers.map((provider) => (
                                     <div key={provider.id} className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10 flex flex-col">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 className="text-xl font-bold text-white">{provider.name}</h3>
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className="flex-shrink-0">
+                                                {provider.profileImage ? (
+                                                    <img
+                                                        src={provider.profileImage}
+                                                        alt={provider.name}
+                                                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-500/30"
+                                                    />
+                                                ) : (
+                                                    <div className="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center text-xl font-bold text-slate-400 border-2 border-slate-600">
+                                                        {provider.name.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex justify-between items-start">
+                                                    <h3 className="text-xl font-bold text-white truncate pr-2">{provider.name}</h3>
+                                                    {provider.isVerified && (
+                                                        <span title="Verificado" className="text-green-400 text-xl flex-shrink-0">✓</span>
+                                                    )}
+                                                </div>
                                                 <span className="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-900/50 text-blue-300 border border-blue-700">
                                                     {provider.serviceType.charAt(0).toUpperCase() + provider.serviceType.slice(1)}
                                                 </span>
                                             </div>
-                                            {provider.isVerified && (
-                                                <span title="Verificado" className="text-green-400 text-xl">✓</span>
-                                            )}
                                         </div>
 
                                         <p className="text-slate-400 text-sm mb-6 line-clamp-3">
@@ -183,25 +198,43 @@ const Dashboard = () => {
                         </button>
 
                         <div className="p-6 md:p-8">
-                            <div className="flex justify-between items-start mb-6 pt-2">
-                                <div>
-                                    <h2 className="text-3xl font-bold text-white">{selectedProvider.name}</h2>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-900/50 text-blue-300 border border-blue-700">
-                                            {selectedProvider.serviceType.charAt(0).toUpperCase() + selectedProvider.serviceType.slice(1)}
-                                        </span>
-                                        {selectedProvider.isVerified && <span className="text-green-400 text-sm">✓ Verificado</span>}
+                            <div className="flex flex-col md:flex-row gap-6 mb-6 pt-2">
+                                <div className="flex-shrink-0 mx-auto md:mx-0">
+                                    {selectedProvider.profileImage ? (
+                                        <img
+                                            src={selectedProvider.profileImage}
+                                            alt={selectedProvider.name}
+                                            className="w-32 h-32 rounded-full object-cover border-4 border-slate-700 shadow-xl"
+                                        />
+                                    ) : (
+                                        <div className="w-32 h-32 rounded-full bg-slate-700 flex items-center justify-center text-4xl font-bold text-slate-400 border-4 border-slate-600 shadow-xl">
+                                            {selectedProvider.name.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex-1 text-center md:text-left">
+                                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                                        <div>
+                                            <h2 className="text-3xl font-bold text-white">{selectedProvider.name}</h2>
+                                            <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
+                                                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-900/50 text-blue-300 border border-blue-700">
+                                                    {selectedProvider.serviceType.charAt(0).toUpperCase() + selectedProvider.serviceType.slice(1)}
+                                                </span>
+                                                {selectedProvider.isVerified && <span className="text-green-400 text-sm flex items-center gap-1">✓ Verificado</span>}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                handleContact(selectedProvider);
+                                                setSelectedProvider(null);
+                                            }}
+                                            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-blue-500/20 cursor-pointer whitespace-nowrap"
+                                        >
+                                            Enviar Mensaje
+                                        </button>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        handleContact(selectedProvider);
-                                        setSelectedProvider(null);
-                                    }}
-                                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-blue-500/20 cursor-pointer"
-                                >
-                                    Enviar Mensaje
-                                </button>
                             </div>
 
                             <div className="mb-8 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
