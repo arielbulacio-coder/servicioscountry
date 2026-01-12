@@ -1,0 +1,79 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1 # Update this if your region is different
+  SERVER_SERVICE_NAME: servicioscountry-server
+  CLIENT_SERVICE_NAME: servicioscountry-client
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Server Container
+        run: |
+          docker build -t gcr.io/$PROJECT_ID/$SERVER_SERVICE_NAME:${{ github.sha }} ./server
+          docker push gcr.io/$PROJECT_ID/$SERVER_SERVICE_NAME:${{ github.sha }}
+
+      - name: Deploy Server to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVER_SERVICE_NAME }}
+          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVER_SERVICE_NAME }}:${{ github.sha }}
+          region: ${{ env.REGION }}
+          env_vars: |
+            NODE_ENV=production
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            INSTANCE_CONNECTION_NAME=${{ secrets.INSTANCE_CONNECTION_NAME }}
+
+  deploy-client:
+    needs: deploy-server # Optional: wait for server to ensure API is ready
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Client Container
+        run: |
+          docker build -t gcr.io/$PROJECT_ID/$CLIENT_SERVICE_NAME:${{ github.sha }} ./client
+          docker push gcr.io/$PROJECT_ID/$CLIENT_SERVICE_NAME:${{ github.sha }}
+
+      - name: Deploy Client to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLIENT_SERVICE_NAME }}
+          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.CLIENT_SERVICE_NAME }}:${{ github.sha }}
+          region: ${{ env.REGION }}
