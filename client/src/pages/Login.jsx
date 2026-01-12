@@ -28,7 +28,7 @@ const Login = () => {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
-            navigate('/'); // Redirect to dashboard or home
+            navigate('/dashboard'); // Redirect to dashboard
         } catch (err) {
             setError(err.response?.data?.message || 'Error al iniciar sesión');
         }
